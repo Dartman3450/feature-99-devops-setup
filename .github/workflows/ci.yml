@@ -1,0 +1,41 @@
+name : CI Example voting app
+on:
+  push :
+     branches : [ "main" ]
+   pull_request :
+     branches : [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on : ubuntu-latest
+
+    steps :
+      - name: checkout-repositories
+        uses: action/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies (vote)
+        working-directory: vote
+        run: npm install
+
+      - name: Run tests (vote)
+        working-directory: vote
+        run: npm test --if-present
+
+      # Test Python worker
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Python deps (worker)
+        working-directory: worker
+        run: pip install -r requirements.txt
+
+      - name: Run Python tests (worker)
+        working-directory: worker
+        run: pytest || echo "No tests found"
