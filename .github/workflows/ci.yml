@@ -1,6 +1,6 @@
 name : CI Example voting app
 on:
-  push :
+  push:
      branches : [ "master" ]
    pull_request :
      branches : [ "master" ]
