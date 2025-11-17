@@ -1,40 +1,44 @@
-name: CI Example voting app
+name: CI Pipeline - Vote and Worker Services
 
 on:
   push:
-     branches : [ "master" ]
+    branches:
+      - master
   pull_request:
-     branches : [ "master" ]
+    branches:
+      - master
 
 jobs:
-  build-and-test:  
+  build-and-test:
     runs-on: ubuntu-latest
+
     steps:
-      - name: checkout-repositories
-        uses: action/checkout@v3
 
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
+    - name: Checkout Repositories
+      uses: actions/checkout@v3
 
-      - name: Install dependencies (vote)
-        working-directory: vote
-        run: npm install
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
 
-      - name: Run tests (vote)
-        working-directory: vote
-        run: npm test --if-present
+    - name: Install Dependencies (vote)
+      working-directory: vote
+      run: npm install
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
+    - name: Run Tests (vote)
+      working-directory: vote
+      run: npm test --if-present
 
-      - name: Install Python deps (worker)
-        working-directory: worker
-        run: pip install -r requirements.txt
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
 
-      - name: Run Python tests (worker)
-        working-directory: worker
-        run: pytest || echo "No tests found"
+    - name: Install Python Deps (worker)
+      working-directory: worker
+      run: pip install -r requirements.txt
+
+    - name: Run Python tests (worker)
+      working-directory: worker
+      run: pytest || echo "No tests found"
