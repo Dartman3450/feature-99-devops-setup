@@ -9,13 +9,28 @@ on:
 jobs:
   basic-test:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - name: Checkout repository code
+        uses: actions/checkout@v4 # Menggunakan versi terbaru
 
-      - name: Install dummy dependencies
-        run: echo "No dependencies to install"
+      # Langkah 1: Setup Python Environment
+      # Diperlukan karena Vote App adalah aplikasi Python
+      - name: Set up Python 3.x
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
 
-      - name: Run basic test
-        run: echo "All good, tests passed!"
+      # Langkah 2: Install Pytest dan dependencies
+      - name: Install Pytest and dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest # Menginstal Pytest
+          # Jika ada dependencies lain, tambahkan: pip install -r requirements.txt
+        working-directory: ./vote # PENTING: Pindah ke direktori Vote App
+
+      # Langkah 3: Menjalankan Pytest
+      - name: Run Pytest commands
+        # Pytest akan mencari file test secara otomatis di direktori 'vote'
+        run: pytest
+        working-directory: ./vote
