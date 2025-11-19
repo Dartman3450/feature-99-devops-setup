@@ -54,5 +54,5 @@ jobs:
   #       uses: docker/build-push-action@v5
   #       with:
   #         context: ./vote 
-          push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/voting-app-vote:latest
+          # push: true
+          # tags: ${{ secrets.DOCKER_USERNAME }}/voting-app-vote:latest
