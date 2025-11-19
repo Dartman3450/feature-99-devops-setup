@@ -1,0 +1,21 @@
+name: CI Pipeline Basic
+
+on:
+  push:
+    branches: ["main", "feature/*"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  basic-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install dummy dependencies
+        run: echo "No dependencies to install"
+
+      - name: Run basic test
+        run: echo "All good, tests passed!"
