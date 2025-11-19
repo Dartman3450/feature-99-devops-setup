@@ -1,105 +1,34 @@
 Rencana Pemantauan & Logging Aplikasi Voting (Produksi)
 
-Tujuan dari rencana ini adalah untuk memastikan observabilitas penuh pada aplikasi voting, yang terdiri dari tiga komponen utama: Vote App (Front/Backend), Redis (Cache/Broker), dan Worker (Processor).
+Tujuan dari rencana plan ini adalah untuk bisa memantau 3 komponen penting dalam aplikasi voting yakni Vote,Redis,Worker dengan alat pemantauan / observasi yang biasa digunakan dalam dunia industri.
 
-Kami akan menggunakan stack Prometheus & Grafana (P&G) yang merupakan standar industri untuk pemantauan berbasis metrik.
+Pada planning kali ini rencananya akan menggunakan prometheus dan grafana sebagai standard untuk memantau metric metric tiap komponen
 
-1. Alat Observability Utama
+Untuk alat utama:
+Metrik -> Mengumpulkan data kinerja tiap komponen dalam aplikasi dengan prometheus sebagai penyimpan datanya
+Visualisasi -> menampilkan data metrik menggunakan dashboard grafana 
+Logging -> mengumpulkan setiap error dan debug dari aplikasi dengan menggunakan sistem agregasi log
 
-Komponen
+Metrik yang digunakan untuk memantau 3 komponen utama yaitu (redis , vote app , dan worker.
 
-Tujuan
+Vote app
+Response latency -> Memantau seberapa cepat aplikasi merespon pada permintaan voting dari user , penting karena bila aplikasi lemot maka user bisa komplain
+Error rate -> Memantau persentase kode atau sistem yang bisa error saat aplikasi sedang berjalan atau beroperasi , penting agar tau dan bisa dihandle langsung jika aplikasi mengalami error
+Traffic(QPS) -> Memeriksa jumlah permintaan voting yang masuk dari aplikasi , berguna untuk mendata banyak responden yang melakukan voting
 
-Alat yang Digunakan
+Redis (cache) Semacam tempat penyimpananan sementara berbasis kontainer
+Uptime -> mengecek apakah kontainer / tempat penyimpanan berkerja secara optimal
+Queue length -> Memonitoring jumlah vote yang mengantri untuk disimpan di redis
+Memory usage-> Memonitoring banyaknya ram yang dipakai oleh redis serta berguna untuk mencegah ram kehabisan memory karena dipantau langsung
 
-Metrik (Metrics)
+Worker (processor) yang mengelola vote
+Processing time -> Memantau dan mengecek waktu yang diperlukan worker untuk mengelola votingan user 
+Worker health ->  Mengecek status worker hidup atau nyala , penting untuk mengetahui jika worker berjalan dengan optimal dalam mengelola votenya
 
-Mengumpulkan data kinerja time-series dari semua komponen.
+Rencana alerting sederhana untuk bisa menotify bila ada error yang terjadi atau kesalahan dalam sistem app atau komponen utamanya
+Conditioning -> Memberikan kondisi dimana bila ditemukan dalam redis terdapat lebih dari 500 item belum dikelola atau diproses oleh worker selama misalnya 5 menit maka dia akan mengirimkan notifikasi kalau ada worker yang mati atau terjadi kesalahan dalam sistem kategori : parah.
 
-Prometheus (Pengumpul/Penyimpanan Metrik)
-
-Visualisasi & Alert
-
-Menampilkan metrik dalam bentuk dashboard dan memicu peringatan.
-
-Grafana (Visualisasi)
-
-Logging
-
-Mengumpulkan, menganalisis, dan mencari log dari semua container.
-
-Promtail & Loki (Sistem Aggregasi Log)
-
-2. Metrik Kritis dan Target (Metrics & SLOs)
-
-Kami akan fokus pada 4 Metrik Emas dari SRE (Latency, Traffic, Errors, Saturation) untuk setiap komponen.
-
-A. Vote App (Frontend/Backend)
-
-Ini adalah container yang menerima input dari pengguna.
-
-Metrik
-
-Tujuan (Alerting)
-
-Latency (Layanan)
-
-Waktu respons API.
-
-Traffic (QPS)
-
-Queries Per Second (jumlah vote baru).
-
-Errors (HTTP)
-
-Tingkat kesalahan HTTP (terutama 5xx).
-
-B. Redis (Cache/Database)
-
-Ini adalah komponen vital untuk menyimpan hasil vote sementara.
-
-Metrik
-
-Tujuan (Alerting)
-
-Memory Usage
-
-Persentase memori yang digunakan Redis.
-
-Uptime / Health
-
-Status running Redis.
-
-Hit Ratio
-
-Persentase cache hit vs miss.
-
-C. Worker (Processor)
-
-Worker memproses hasil vote dari Redis ke database utama.
-
-Metrik
-
-Tujuan (Alerting)
-
-Queue Length
-
-Jumlah vote yang menunggu untuk diproses di antrean Redis.
-
-Processing Time
-
-Waktu yang dibutuhkan worker untuk memproses satu vote.
-
-Worker Count
-
-Jumlah instance worker yang berjalan.
-
-3. Contoh Konfigurasi Prometheus dan Grafana
-
-A. Konfigurasi Prometheus (pseudocode prometheus.yml)
-
-Prometheus dikonfigurasi untuk scrape (mengambil) metrik dari setiap komponen.
-
+pseudo code:
 # Prometheus Configuration (Target Discovery)
 scrape_configs:
   # 1. Memantau Prometheus itu sendiri
